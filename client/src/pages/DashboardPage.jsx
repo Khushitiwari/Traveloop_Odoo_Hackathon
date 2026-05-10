@@ -1,0 +1,117 @@
+
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axiosInstance';
+import Sidebar from '../components/common/Sidebar';
+import TripCard from '../components/trips/TripCard';
+import Loader from '../components/common/Loader';
+
+const POPULAR_DESTINATIONS = [
+  { name: 'Paris', country: 'France', emoji: '🗼', color: 'from-amber-100 to-amber-50' },
+  { name: 'Tokyo', country: 'Japan', emoji: '⛩️', color: 'from-blush-100 to-blush-50' },
+  { name: 'Rome', country: 'Italy', emoji: '🏛️', color: 'from-mint-100 to-mint-50' },
+  { name: 'Bangkok', country: 'Thailand', emoji: '🏯', color: 'from-purple-100 to-purple-50' },
+  { name: 'New York', country: 'USA', emoji: '🗽', color: 'from-blue-100 to-blue-50' },
+];
+
+export default function DashboardPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get('/trips').then(r => setTrips(r.data)).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const upcomingTrips = trips.filter(t => new Date(t.startDate) > new Date()).slice(0, 3);
+  const totalBudget = trips.reduce((sum, t) => sum + (t.budget?.totalBudget || 0), 0);
+
+  return (
+    <div className="layout-with-sidebar">
+      <Sidebar />
+      <main className="main-with-sidebar pb-20 md:pb-0">
+        <div className="page-content">
+          {/* Header */}
+          <div className="mb-8 animate-fade-in">
+            <p className="text-cream-500 text-sm font-medium mb-1">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
+            <h1 className="text-3xl font-display font-semibold text-mint-900">
+              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
+              <span className="text-mint-500">{user?.name?.split(' ')[0]}</span> 👋
+            </h1>
+            <p className="text-cream-500 mt-1">Ready to plan your next adventure?</p>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-slide-up">
+            {[
+              { label: 'Total Trips', value: trips.length, icon: '🗺️', color: 'bg-mint-50 border-mint-200' },
+              { label: 'Upcoming', value: trips.filter(t => new Date(t.startDate) > new Date()).length, icon: '📅', color: 'bg-amber-50 border-amber-200' },
+              { label: 'Total Budget', value: `$${totalBudget.toLocaleString()}`, icon: '💰', color: 'bg-blush-50 border-blush-200' },
+              { label: 'Cities Planned', value: trips.reduce((s, t) => s + (t.stops?.length || 0), 0), icon: '🏙️', color: 'bg-cream-100 border-cream-300' },
+            ].map(stat => (
+              <div key={stat.label} className={`rounded-2xl border p-4 ${stat.color}`}>
+                <div className="text-2xl mb-2">{stat.icon}</div>
+                <div className="text-2xl font-display font-semibold text-mint-900">{stat.value}</div>
+                <div className="text-xs text-cream-500 font-medium mt-0.5">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Plan New Trip CTA */}
+          <div className="bg-gradient-to-r from-mint-500 to-mint-400 rounded-2xl p-6 mb-8 flex items-center justify-between text-white animate-fade-in">
+            <div>
+              <h3 className="text-lg font-display font-semibold mb-1">Ready for a new adventure?</h3>
+              <p className="text-mint-100 text-sm">Build your perfect itinerary in minutes.</p>
+            </div>
+            <button onClick={() => navigate('/trips/new')} className="bg-white text-mint-700 font-semibold px-5 py-2.5 rounded-xl hover:bg-cream-100 transition-colors whitespace-nowrap text-sm">
+              Plan a Trip +
+            </button>
+          </div>
+
+          {/* Upcoming Trips */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="section-heading mb-0">Upcoming Trips</h2>
+              <button onClick={() => navigate('/trips')} className="text-mint-500 text-sm font-medium hover:text-mint-700 transition-colors">
+                View all →
+              </button>
+            </div>
+            {loading ? <Loader /> : upcomingTrips.length === 0 ? (
+              <div className="bg-white rounded-2xl border-2 border-dashed border-cream-300 p-10 text-center">
+                <div className="text-4xl mb-3">🧭</div>
+                <p className="text-cream-500 font-medium">No upcoming trips yet</p>
+                <p className="text-cream-400 text-sm mt-1">Start planning your next adventure!</p>
+                <button onClick={() => navigate('/trips/new')} className="btn-primary mt-4">Create Trip</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {upcomingTrips.map(trip => (
+                  <TripCard key={trip.id} trip={trip} onDelete={id => setTrips(prev => prev.filter(t => t.id !== id))} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Popular Destinations */}
+          <div>
+            <h2 className="section-heading">Explore Destinations</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {POPULAR_DESTINATIONS.map(dest => (
+                <div key={dest.name} className={`bg-gradient-to-b ${dest.color} rounded-2xl p-4 text-center cursor-pointer hover:scale-105 transition-transform`}
+                  onClick={() => navigate('/trips/new')}>
+                  <div className="text-3xl mb-2">{dest.emoji}</div>
+                  <p className="font-display font-semibold text-sm text-mint-800">{dest.name}</p>
+                  <p className="text-xs text-cream-500">{dest.country}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

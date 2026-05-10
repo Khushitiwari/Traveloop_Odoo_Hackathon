@@ -1,50 +1,170 @@
-
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import Sidebar from '../components/common/Sidebar';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import toast from 'react-hot-toast';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+const CATEGORIES = [
+  { key: 'transport', label: 'Transport', icon: '✈️', color: '#56afa1' },
+  { key: 'accommodation', label: 'Stay', icon: '🏨', color: '#df7a7c' },
+  { key: 'activities', label: 'Activities', icon: '🎯', color: '#f59e0b' },
+  { key: 'meals', label: 'Meals', icon: '🍽️', color: '#8b5cf6' },
+  { key: 'misc', label: 'Misc', icon: '📦', color: '#6b7280' },
+];
 
 export default function BudgetPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [budget, setBudget] = useState({ transport: 0, accommodation: 0, activities: 0, meals: 0, misc: 0, totalBudget: 0, currency: 'USD' });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    api.get(`/trips/${id}/budget`).then(r => { if (r.data) setBudget(r.data); });
+    api.get(`/trips/${id}/budget`)
+      .then(r => { if (r.data) setBudget(r.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [id]);
 
-  const chartData = [
-    { name: 'Transport', value: budget.transport },
-    { name: 'Stay', value: budget.accommodation },
-    { name: 'Activities', value: budget.activities },
-    { name: 'Meals', value: budget.meals },
-    { name: 'Misc', value: budget.misc },
-  ];
+  const chartData = CATEGORIES.map(c => ({ name: c.label, value: budget[c.key] || 0 })).filter(d => d.value > 0);
+  const spent = CATEGORIES.reduce((s, c) => s + (budget[c.key] || 0), 0);
+  const remaining = budget.totalBudget - spent;
+  const overBudget = spent > budget.totalBudget && budget.totalBudget > 0;
+  const pct = budget.totalBudget > 0 ? Math.min(100, (spent / budget.totalBudget) * 100) : 0;
 
-  const spent = chartData.reduce((s, c) => s + c.value, 0);
-
-  const save = () => api.put(`/trips/${id}/budget`, budget);
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.put(`/trips/${id}/budget`, budget);
+      toast.success('Budget saved!');
+    } catch {
+      toast.error('Failed to save budget');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
-    <div>
-      <h2>Budget Planner</h2>
-      <p>Total Budget: {budget.totalBudget} {budget.currency} | Spent: {spent}</p>
-      {spent > budget.totalBudget && <p style={{ color: 'red' }}>⚠ Over budget!</p>}
-      {['transport', 'accommodation', 'activities', 'meals', 'misc'].map(cat => (
-        <div key={cat}>
-          <label>{cat}</label>
-          <input type="number" value={budget[cat]}
-            onChange={e => setBudget({ ...budget, [cat]: parseFloat(e.target.value) || 0 })} />
+    <div className="layout-with-sidebar">
+      <Sidebar />
+      <main className="main-with-sidebar pb-20 md:pb-0">
+        <div className="page-content">
+          <button onClick={() => navigate(`/trips/${id}/builder`)} className="text-cream-500 hover:text-cream-700 text-sm font-medium mb-4 flex items-center gap-1.5">
+            ← Back to Builder
+          </button>
+          <div className="mb-8">
+            <h1 className="page-title">Budget Planner</h1>
+            <p className="page-subtitle">Track and manage your trip expenses.</p>
+          </div>
+
+          {/* Overview cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="bg-white rounded-2xl shadow-card p-5 border-l-4 border-mint-400">
+              <p className="text-cream-500 text-sm mb-1">Total Budget</p>
+              <p className="text-2xl font-display font-semibold text-mint-800">{budget.currency} {budget.totalBudget.toLocaleString()}</p>
+            </div>
+            <div className={`bg-white rounded-2xl shadow-card p-5 border-l-4 ${overBudget ? 'border-blush-400' : 'border-amber-400'}`}>
+              <p className="text-cream-500 text-sm mb-1">Spent</p>
+              <p className={`text-2xl font-display font-semibold ${overBudget ? 'text-blush-600' : 'text-amber-700'}`}>
+                {budget.currency} {spent.toLocaleString()}
+              </p>
+              {overBudget && <p className="text-blush-500 text-xs font-medium mt-1">⚠ Over budget by {(spent - budget.totalBudget).toFixed(0)}</p>}
+            </div>
+            <div className="bg-white rounded-2xl shadow-card p-5 border-l-4 border-cream-300">
+              <p className="text-cream-500 text-sm mb-1">Remaining</p>
+              <p className={`text-2xl font-display font-semibold ${remaining >= 0 ? 'text-mint-700' : 'text-blush-600'}`}>
+                {budget.currency} {Math.abs(remaining).toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          {budget.totalBudget > 0 && (
+            <div className="bg-white rounded-2xl shadow-card p-5 mb-8">
+              <div className="flex justify-between text-sm font-medium text-cream-600 mb-2">
+                <span>Budget Used</span>
+                <span className={overBudget ? 'text-blush-500' : 'text-mint-600'}>{pct.toFixed(0)}%</span>
+              </div>
+              <div className="h-3 bg-cream-100 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${overBudget ? 'bg-blush-400' : pct > 80 ? 'bg-amber-400' : 'bg-mint-400'}`}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Input form */}
+            <div className="bg-white rounded-2xl shadow-card p-6">
+              <h2 className="section-heading">Set Budget</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="label flex items-center gap-2">💳 Total Budget</label>
+                  <div className="flex gap-2">
+                    <select className="input-field w-24" value={budget.currency} onChange={e => setBudget({ ...budget, currency: e.target.value })}>
+                      {['USD', 'EUR', 'GBP', 'INR', 'JPY'].map(c => <option key={c}>{c}</option>)}
+                    </select>
+                    <input type="number" className="input-field flex-1" placeholder="0"
+                      value={budget.totalBudget || ''} onChange={e => setBudget({ ...budget, totalBudget: parseFloat(e.target.value) || 0 })} />
+                  </div>
+                </div>
+                <div className="border-t border-cream-100 pt-4">
+                  <p className="text-sm font-medium text-cream-600 mb-3">Breakdown</p>
+                  {CATEGORIES.map(cat => (
+                    <div key={cat.key} className="flex items-center gap-3 mb-3">
+                      <span className="text-lg w-7">{cat.icon}</span>
+                      <label className="text-sm font-medium text-cream-700 w-28">{cat.label}</label>
+                      <input type="number" className="input-field flex-1 py-2" placeholder="0"
+                        value={budget[cat.key] || ''}
+                        onChange={e => setBudget({ ...budget, [cat.key]: parseFloat(e.target.value) || 0 })} />
+                    </div>
+                  ))}
+                </div>
+                <button onClick={save} disabled={saving} className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60">
+                  {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                  Save Budget
+                </button>
+              </div>
+            </div>
+
+            {/* Chart */}
+            <div className="bg-white rounded-2xl shadow-card p-6">
+              <h2 className="section-heading">Breakdown Chart</h2>
+              {chartData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-48 text-cream-400">
+                  <div className="text-4xl mb-3">📊</div>
+                  <p className="text-sm">Enter budget amounts to see the chart</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={280}>
+                  <PieChart>
+                    <Pie data={chartData} cx="50%" cy="50%" outerRadius={100} dataKey="value" paddingAngle={3}>
+                      {chartData.map((_, i) => <Cell key={i} fill={CATEGORIES.find(c => c.label === chartData[i].name)?.color || '#ccc'} />)}
+                    </Pie>
+                    <Tooltip formatter={(val) => [`${budget.currency} ${val}`, '']} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+              {spent > 0 && (
+                <div className="border-t border-cream-100 pt-4 mt-4 space-y-2">
+                  {CATEGORIES.filter(c => budget[c.key] > 0).map(cat => (
+                    <div key={cat.key} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
+                        <span className="text-cream-600">{cat.label}</span>
+                      </div>
+                      <span className="font-medium text-cream-800">{budget.currency} {budget[cat.key].toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      ))}
-      <button onClick={save}>Save Budget</button>
-      <PieChart width={400} height={300}>
-        <Pie data={chartData} cx={200} cy={150} outerRadius={100} dataKey="value">
-          {chartData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-        </Pie>
-        <Tooltip /><Legend />
-      </PieChart>
+      </main>
     </div>
   );
 }

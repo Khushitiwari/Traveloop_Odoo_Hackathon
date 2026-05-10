@@ -2,20 +2,20 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginPage from '../pages/LoginPage';
-// import SignupPage from '../pages/SignupPage';
-// import DashboardPage from '../pages/DashboardPage';
-// import MyTripsPage from '../pages/MyTripsPage';
-// import CreateTripPage from '../pages/CreateTripPage';
-// import ItineraryBuilderPage from '../pages/ItineraryBuilderPage';
-// import ItineraryViewPage from '../pages/ItineraryViewPage';
-// import CitySearchPage from '../pages/CitySearchPage';
-// import ActivitySearchPage from '../pages/ActivitySearchPage';
+import SignupPage from '../pages/SignupPage';
+import DashboardPage from '../pages/DashboardPage';
+import MyTripsPage from '../pages/MyTripsPage';
+import CreateTripPage from '../pages/CreateTripPage';
+import ItineraryBuilderPage from '../pages/ItineraryBuilderPage';
+import ItineraryViewPage from '../pages/ItineraryViewPage';
+import CitySearchPage from '../pages/CitySearchPage';
+import ActivitySearchPage from '../pages/ActivitySearchPage';
  import BudgetPage from '../pages/BudgetPage';
-// import PackingChecklistPage from '../pages/PackingChecklistPage';
-// import SharedItineraryPage from '../pages/SharedItineraryPage';
-// import ProfilePage from '../pages/ProfilePage';
-// import TripNotesPage from '../pages/TripNotesPage';
-// import AdminDashboardPage from '../pages/AdminDashboardPage';
+import PackingChecklistPage from '../pages/PackingChecklistPage';
+import SharedItineraryPage from '../pages/SharedItineraryPage';
+import ProfilePage from '../pages/ProfilePage';
+import TripNotesPage from '../pages/TripNotesPage';
+import AdminDashboardPage from '../pages/AdminDashboardPage.jsx';
 
 const ProtectedRoute = ({ children, adminOnly }) => {
   const { user, loading } = useAuth();
@@ -33,7 +33,7 @@ export default function AppRouter() {
         <Route path="/trips/:id/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
 
         
-       {/* <Route path="/signup" element={<SignupPage />} />
+       <Route path="/signup" element={<SignupPage />} />
         <Route path="/shared/:token" element={<SharedItineraryPage />} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/trips" element={<ProtectedRoute><MyTripsPage /></ProtectedRoute>} />
@@ -45,7 +45,7 @@ export default function AppRouter() {
         <Route path="/trips/:id/checklist" element={<ProtectedRoute><PackingChecklistPage /></ProtectedRoute>} />
         <Route path="/trips/:id/notes" element={<ProtectedRoute><TripNotesPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboardPage /></ProtectedRoute>} />  */}
+        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboardPage /></ProtectedRoute>} /> 
       </Routes>
     </BrowserRouter>
   );
