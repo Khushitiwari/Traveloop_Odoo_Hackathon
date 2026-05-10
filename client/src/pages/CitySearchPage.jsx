@@ -93,7 +93,8 @@ export default function CitySearchPage() {
           ) : cities.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-4xl mb-3">🌏</div>
-              <p className="text-cream-500 font-medium">No cities found. Try a different search.</p>
+              <p className="text-cream-700 font-medium">No cities found for this region yet.</p>
+              <p className="text-cream-600 text-sm mt-1">Try selecting a different continent filter.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

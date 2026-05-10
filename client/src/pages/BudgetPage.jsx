@@ -23,7 +23,19 @@ export default function BudgetPage() {
 
   useEffect(() => {
     api.get(`/trips/${id}/budget`)
-      .then(r => { if (r.data) setBudget(r.data); })
+      .then(r => {
+        if (r.data) {
+          setBudget({
+            totalBudget: Number(r.data.totalBudget) || 0,
+            transport: Number(r.data.transport) || 0,
+            accommodation: Number(r.data.accommodation) || 0,
+            activities: Number(r.data.activities) || 0,
+            meals: Number(r.data.meals) || 0,
+            misc: Number(r.data.misc) || 0,
+            currency: r.data.currency || 'USD',
+          });
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [id]);
@@ -107,8 +119,8 @@ export default function BudgetPage() {
                     <select className="input-field w-24" value={budget.currency} onChange={e => setBudget({ ...budget, currency: e.target.value })}>
                       {['USD', 'EUR', 'GBP', 'INR', 'JPY'].map(c => <option key={c}>{c}</option>)}
                     </select>
-                    <input type="number" className="input-field flex-1" placeholder="0"
-                      value={budget.totalBudget || ''} onChange={e => setBudget({ ...budget, totalBudget: parseFloat(e.target.value) || 0 })} />
+                    <input type="number" min="0" step="1" className="input-field flex-1" placeholder="0"
+                      value={budget.totalBudget} onChange={e => setBudget({ ...budget, totalBudget: parseFloat(e.target.value) || 0 })} />
                   </div>
                 </div>
                 <div className="border-t border-cream-100 pt-4">
@@ -117,8 +129,8 @@ export default function BudgetPage() {
                     <div key={cat.key} className="flex items-center gap-3 mb-3">
                       <span className="text-lg w-7">{cat.icon}</span>
                       <label className="text-sm font-medium text-cream-700 w-28">{cat.label}</label>
-                      <input type="number" className="input-field flex-1 py-2" placeholder="0"
-                        value={budget[cat.key] || ''}
+                      <input type="number" min="0" step="1" className="input-field flex-1 py-2" placeholder="0"
+                        value={budget[cat.key]}
                         onChange={e => setBudget({ ...budget, [cat.key]: parseFloat(e.target.value) || 0 })} />
                     </div>
                   ))}

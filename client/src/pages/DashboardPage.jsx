@@ -8,11 +8,26 @@ import TripCard from '../components/trips/TripCard';
 import Loader from '../components/common/Loader';
 
 const POPULAR_DESTINATIONS = [
-  { name: 'Paris', country: 'France', emoji: '🗼', color: 'from-amber-100 to-amber-50' },
-  { name: 'Tokyo', country: 'Japan', emoji: '⛩️', color: 'from-blush-100 to-blush-50' },
-  { name: 'Rome', country: 'Italy', emoji: '🏛️', color: 'from-mint-100 to-mint-50' },
-  { name: 'Bangkok', country: 'Thailand', emoji: '🏯', color: 'from-purple-100 to-purple-50' },
-  { name: 'New York', country: 'USA', emoji: '🗽', color: 'from-blue-100 to-blue-50' },
+  {
+    name: 'Paris', country: 'France', region: 'Europe', emoji: '🗼', color: 'from-amber-100 to-amber-50',
+    famousPlaces: ['Eiffel Tower', 'Louvre Museum', 'Montmartre', 'Seine River Cruise'],
+  },
+  {
+    name: 'Tokyo', country: 'Japan', region: 'Asia', emoji: '⛩️', color: 'from-blush-100 to-blush-50',
+    famousPlaces: ['Shibuya Crossing', 'Senso-ji Temple', 'Tokyo Skytree', 'Meiji Shrine'],
+  },
+  {
+    name: 'Rome', country: 'Italy', region: 'Europe', emoji: '🏛️', color: 'from-mint-100 to-mint-50',
+    famousPlaces: ['Colosseum', 'Roman Forum', 'Trevi Fountain', 'Vatican Museums'],
+  },
+  {
+    name: 'Bangkok', country: 'Thailand', region: 'Asia', emoji: '🏯', color: 'from-purple-100 to-purple-50',
+    famousPlaces: ['Grand Palace', 'Wat Arun', 'Chatuchak Market', 'Chao Phraya Cruise'],
+  },
+  {
+    name: 'New York', country: 'USA', region: 'Americas', emoji: '🗽', color: 'from-blue-100 to-blue-50',
+    famousPlaces: ['Statue of Liberty', 'Central Park', 'Times Square', 'Brooklyn Bridge'],
+  },
 ];
 
 export default function DashboardPage() {
@@ -20,6 +35,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDestination, setSelectedDestination] = useState(null);
 
   useEffect(() => {
     api.get('/trips').then(r => setTrips(r.data)).catch(() => {}).finally(() => setLoading(false));
@@ -102,13 +118,37 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {POPULAR_DESTINATIONS.map(dest => (
                 <div key={dest.name} className={`bg-gradient-to-b ${dest.color} rounded-2xl p-4 text-center cursor-pointer hover:scale-105 transition-transform`}
-                  onClick={() => navigate('/trips/new')}>
+                  onClick={() => setSelectedDestination(dest)}>
                   <div className="text-3xl mb-2">{dest.emoji}</div>
                   <p className="font-display font-semibold text-sm text-mint-800">{dest.name}</p>
                   <p className="text-xs text-cream-500">{dest.country}</p>
                 </div>
               ))}
             </div>
+
+            {selectedDestination && (
+              <div className="mt-5 bg-white rounded-2xl border border-cream-200 p-5 shadow-card">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-display font-semibold text-mint-900 text-xl">
+                      {selectedDestination.emoji} {selectedDestination.name}, {selectedDestination.country}
+                    </h3>
+                    <p className="text-sm text-cream-700 mt-1">Region: {selectedDestination.region}</p>
+                  </div>
+                  <button onClick={() => navigate('/trips/new')} className="btn-primary text-sm">
+                    Plan Trip Here
+                  </button>
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm font-medium text-mint-900 mb-2">Famous places:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDestination.famousPlaces.map((place) => (
+                      <span key={place} className="badge-cream text-xs">{place}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
