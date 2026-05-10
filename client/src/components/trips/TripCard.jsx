@@ -90,6 +90,21 @@ export default function TripCard({ trip, onDelete }) {
             Budget
           </button>
           <button
+            onClick={(e) => { e.stopPropagation(); navigate(`/trips/${trip.id}/notes`); }}
+            className="flex-1 py-1.5 text-xs font-medium text-mint-700 bg-mint-50 rounded-lg hover:bg-mint-100 transition-colors border border-mint-200"
+          >
+            Notes
+          </button>
+          {trip.isPublic && trip.shareToken && (
+            <button
+              onClick={(e) => { e.stopPropagation(); navigate(`/shared/${trip.shareToken}`); }}
+              className="py-1.5 px-2 text-xs font-medium text-mint-700 bg-mint-50 rounded-lg hover:bg-mint-100 transition-colors border border-mint-200"
+              title="Open shared itinerary"
+            >
+              🔗
+            </button>
+          )}
+          <button
             onClick={handleDelete}
             className="py-1.5 px-2 text-xs font-medium text-blush-500 bg-blush-50 rounded-lg hover:bg-blush-100 transition-colors border border-blush-200"
           >

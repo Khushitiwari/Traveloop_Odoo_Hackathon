@@ -231,3 +231,9 @@ body {
 .border-l-4 {
   border-left-width: 4px !important;
 }
+
+/* Missing utility shades used by pages */
+.bg-purple-50 { background-color: #f6f2ff !important; }
+.border-purple-200 { border-color: #e7d9ff !important; }
+.border-purple-300 { border-color: #d6beff !important; }
+.text-purple-700 { color: #5c3b9b !important; }

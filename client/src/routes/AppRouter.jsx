@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
 import DashboardPage from '../pages/DashboardPage';
@@ -22,11 +22,10 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/trips/:id/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
-
-        
-       <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login/admin" element={<Navigate to="/login?admin=1" replace />} />
+        <Route path="/signup" element={<SignupPage />} />
         <Route path="/shared/:token" element={<SharedItineraryPage />} />
+        <Route path="/trips/:id/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/trips" element={<ProtectedRoute><MyTripsPage /></ProtectedRoute>} />
         <Route path="/trips/new" element={<ProtectedRoute><CreateTripPage /></ProtectedRoute>} />
@@ -37,7 +36,8 @@ export default function AppRouter() {
         <Route path="/trips/:id/checklist" element={<ProtectedRoute><PackingChecklistPage /></ProtectedRoute>} />
         <Route path="/trips/:id/notes" element={<ProtectedRoute><TripNotesPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboardPage /></ProtectedRoute>} /> 
+        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboardPage /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

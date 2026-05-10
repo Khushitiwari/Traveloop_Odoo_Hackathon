@@ -1,12 +1,14 @@
 
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const adminMode = new URLSearchParams(location.search).get('admin') === '1';
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
 
@@ -14,9 +16,13 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      const loggedInUser = await login(form.email, form.password);
       toast.success('Welcome back! 👋');
-      navigate('/');
+      if (loggedInUser?.role === 'ADMIN' || adminMode) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch {
       toast.error('Invalid email or password');
     } finally {
@@ -27,17 +33,17 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-mint-400 via-mint-300 to-mint-200 flex-col items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-mint-300 via-mint-200 to-cream-100 flex-col items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 30% 70%, #27625a 0%, transparent 50%), radial-gradient(circle at 80% 20%, #b2ddd4 0%, transparent 50%)' }} />
         <div className="relative text-center">
           <div className="text-7xl mb-6">🌍</div>
-          <h1 className="text-4xl font-display font-bold text-white mb-4">Plan Your Dream Trip</h1>
-          <p className="text-mint-100 text-lg leading-relaxed max-w-sm">
+          <h1 className="text-4xl font-display font-bold text-mint-900 mb-4">Plan Your Dream Trip</h1>
+          <p className="text-mint-800 text-lg leading-relaxed max-w-sm">
             Traveloop makes multi-city travel planning effortless. Build itineraries, manage budgets, and share your adventures.
           </p>
           <div className="mt-10 flex flex-wrap gap-3 justify-center">
             {['🗼 Paris', '🗾 Tokyo', '🏛️ Rome', '🗽 New York'].map(city => (
-              <span key={city} className="bg-white/20 backdrop-blur text-white text-sm px-3 py-1.5 rounded-full">{city}</span>
+              <span key={city} className="bg-white/60 backdrop-blur text-mint-900 text-sm px-3 py-1.5 rounded-full">{city}</span>
             ))}
           </div>
         </div>
@@ -52,8 +58,12 @@ export default function LoginPage() {
             <span className="text-2xl font-display font-semibold text-mint-800">Traveloop</span>
           </div>
 
-          <h2 className="text-3xl font-display font-semibold text-mint-900 mb-2">Welcome back</h2>
-          <p className="text-cream-500 mb-8">Sign in to continue planning your adventures.</p>
+          <h2 className="text-3xl font-display font-semibold text-mint-900 mb-2">
+            {adminMode ? 'Admin sign in' : 'Welcome back'}
+          </h2>
+          <p className="text-cream-600 mb-8">
+            {adminMode ? 'Use admin credentials to open the dashboard.' : 'Sign in to continue planning your adventures.'}
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -93,6 +103,12 @@ export default function LoginPage() {
             Don't have an account?{' '}
             <Link to="/signup" className="text-mint-600 font-medium hover:text-mint-800 transition-colors">
               Create one free
+            </Link>
+          </p>
+          <p className="mt-2 text-center text-sm text-cream-500">
+            Need admin access?{' '}
+            <Link to="/login?admin=1" className="text-mint-700 font-medium hover:text-mint-900 transition-colors">
+              Login as admin
             </Link>
           </p>
         </div>

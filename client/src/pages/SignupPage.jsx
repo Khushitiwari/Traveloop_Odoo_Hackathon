@@ -53,7 +53,7 @@ export default function SignupPage() {
           </div>
 
           <h2 className="text-3xl font-display font-semibold text-mint-900 mb-2">Create your account</h2>
-          <p className="text-cream-500 mb-8">Free forever. No credit card required.</p>
+          <p className="text-cream-600 mb-8">Free forever. No credit card required.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

@@ -115,6 +115,15 @@ export default function ItineraryBuilderPage() {
             </div>
             <div className="flex gap-2 flex-wrap">
               <button onClick={() => navigate(`/trips/${id}/view`)} className="btn-secondary text-sm px-4 py-2">View Itinerary</button>
+              <button onClick={() => navigate(`/trips/${id}/cities`)} className="btn-secondary text-sm px-4 py-2">City Search 🌆</button>
+              {trip?.stops?.[0] && (
+                <button
+                  onClick={() => navigate(`/trips/${id}/activities/${trip.stops[0].id}`)}
+                  className="btn-secondary text-sm px-4 py-2"
+                >
+                  Activity Search 🎯
+                </button>
+              )}
               <button onClick={() => navigate(`/trips/${id}/budget`)} className="btn-secondary text-sm px-4 py-2">Budget 💰</button>
               <button onClick={() => navigate(`/trips/${id}/checklist`)} className="btn-secondary text-sm px-4 py-2">Checklist 📋</button>
               <button onClick={() => navigate(`/trips/${id}/notes`)} className="btn-secondary text-sm px-4 py-2">Notes 📝</button>
@@ -152,7 +161,7 @@ export default function ItineraryBuilderPage() {
       </main>
 
       {/* Add Stop Modal */}
-      <Modal open={showAddStop} onClose={() => setShowAddStop(false)} title="Add a Stop">
+      <Modal isOpen={showAddStop} onClose={() => setShowAddStop(false)} title="Add a Stop">
         <form onSubmit={handleAddStop} className="space-y-4">
           <div>
             <label className="label">Search City</label>
@@ -194,7 +203,7 @@ export default function ItineraryBuilderPage() {
       </Modal>
 
       {/* Activities Modal */}
-      <Modal open={!!activityModal} onClose={() => setActivityModal(null)} title="Add Activities" size="lg">
+      <Modal isOpen={!!activityModal} onClose={() => setActivityModal(null)} title="Add Activities" size="lg">
         {activities.length === 0 ? (
           <p className="text-cream-500 text-center py-6">No activities found for this city.</p>
         ) : (

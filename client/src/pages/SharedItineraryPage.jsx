@@ -37,26 +37,26 @@ export default function SharedItineraryPage() {
   return (
     <div className="min-h-screen bg-cream-100">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-mint-500 to-mint-400 text-white px-6 py-12 text-center">
+      <div className="bg-gradient-to-br from-mint-300 to-mint-200 text-mint-900 px-6 py-12 text-center border-b border-cream-200">
         <div className="max-w-2xl mx-auto">
-          <p className="text-mint-200 text-sm font-medium mb-2">Shared Itinerary by {trip.user?.name}</p>
+          <p className="text-mint-700 text-sm font-medium mb-2">Shared Itinerary by {trip.user?.name}</p>
           <h1 className="text-4xl font-display font-bold mb-3">{trip.name}</h1>
-          <p className="text-mint-100">
+          <p className="text-mint-800">
             {new Date(trip.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} →{' '}
             {new Date(trip.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
           <div className="flex justify-center gap-6 mt-6">
             <div className="text-center">
               <div className="text-2xl font-bold">{trip.stops?.length}</div>
-              <div className="text-mint-200 text-sm">Stops</div>
+              <div className="text-mint-700 text-sm">Stops</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">{trip.stops?.reduce((s, st) => s + (st.stopActivities?.length || 0), 0)}</div>
-              <div className="text-mint-200 text-sm">Activities</div>
+              <div className="text-mint-700 text-sm">Activities</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">${totalCost}</div>
-              <div className="text-mint-200 text-sm">Activities Cost</div>
+              <div className="text-mint-700 text-sm">Activities Cost</div>
             </div>
           </div>
         </div>
