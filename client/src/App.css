@@ -1,2 +1,233 @@
 
-@import "tailwindcss";
+:root {
+  --c-navy: #0a1f33;
+  --c-teal-900: #006f90;
+  --c-teal-700: #0087a8;
+  --c-teal-500: #5baeb1;
+  --c-surface: #f7f6ef;
+  --c-accent: #f59a23;
+  --c-danger: #e66f78;
+
+  --sidebar-expanded: 15rem;
+  --sidebar-collapsed: 4.75rem;
+}
+
+html[data-sidebar='expanded'] {
+  --sidebar-width: var(--sidebar-expanded);
+}
+
+html[data-sidebar='collapsed'] {
+  --sidebar-width: var(--sidebar-collapsed);
+}
+
+body {
+  background: var(--c-surface);
+  color: #243041;
+}
+
+/* Layout */
+.layout-with-sidebar {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 90% -20%, rgba(245, 154, 35, 0.12), transparent 35%),
+    radial-gradient(circle at -10% 120%, rgba(0, 135, 168, 0.12), transparent 40%),
+    var(--c-surface);
+}
+
+.main-with-sidebar {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .main-with-sidebar {
+    margin-left: var(--sidebar-width, var(--sidebar-expanded));
+    transition: margin-left 220ms ease;
+  }
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 5rem;
+}
+
+@media (min-width: 640px) {
+  .page-content {
+    padding: 2rem 1.5rem 5rem;
+  }
+}
+
+.page-title {
+  font-size: clamp(1.6rem, 2.3vw, 2.15rem);
+  font-weight: 700;
+  color: var(--c-navy);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.page-subtitle {
+  color: #5f7186;
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+}
+
+.section-heading {
+  color: var(--c-navy);
+  font-size: 1.15rem;
+  font-weight: 650;
+  margin-bottom: 0.85rem;
+}
+
+/* Forms */
+.label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4d6176;
+}
+
+.input-field {
+  width: 100%;
+  border: 1px solid #d7dee6;
+  border-radius: 0.85rem;
+  background: #fff;
+  color: #1d3147;
+  padding: 0.62rem 0.85rem;
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input-field:focus {
+  border-color: var(--c-teal-700);
+  box-shadow: 0 0 0 3px rgba(0, 135, 168, 0.14);
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.8rem;
+  font-weight: 600;
+  padding: 0.62rem 0.95rem;
+  transition: all 150ms ease;
+}
+
+.btn-primary {
+  background: linear-gradient(140deg, var(--c-teal-900), var(--c-teal-700));
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 24px rgba(0, 111, 144, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 26px rgba(0, 111, 144, 0.22);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--c-teal-900);
+  border: 1px solid #cfd8e2;
+}
+
+.btn-secondary:hover {
+  border-color: #9db4c8;
+  background: #f9fcff;
+}
+
+.badge,
+.badge-mint,
+.badge-cream {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.2rem 0.55rem;
+  font-weight: 600;
+}
+
+.badge-mint {
+  background: rgba(0, 135, 168, 0.1);
+  color: var(--c-teal-900);
+}
+
+.badge-cream {
+  background: #eef1f5;
+  color: #566b80;
+}
+
+.shadow-card {
+  box-shadow: 0 8px 26px rgba(10, 31, 51, 0.08);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 14px 34px rgba(10, 31, 51, 0.13);
+}
+
+/* Add interactivity polish to cards */
+.rounded-2xl {
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.rounded-2xl:hover {
+  box-shadow: 0 12px 30px rgba(10, 31, 51, 0.1);
+}
+
+/* Palette bridge for existing utility-style class names used in JSX */
+.bg-mint-50 { background-color: #eef9fb !important; }
+.bg-mint-100 { background-color: #d6f0f5 !important; }
+.bg-mint-200 { background-color: #bce4ec !important; }
+.bg-mint-300 { background-color: #8dd3e0 !important; }
+.bg-mint-400 { background-color: #5baeb1 !important; }
+.bg-mint-500 { background-color: #0087a8 !important; }
+.bg-mint-600 { background-color: #007291 !important; }
+.bg-mint-700 { background-color: #00617a !important; }
+.bg-mint-800 { background-color: #0a1f33 !important; }
+.text-mint-500 { color: #0087a8 !important; }
+.text-mint-600 { color: #007291 !important; }
+.text-mint-700 { color: #006f90 !important; }
+.text-mint-800 { color: #0a1f33 !important; }
+.text-mint-900 { color: #081829 !important; }
+.border-mint-100 { border-color: #d6f0f5 !important; }
+.border-mint-200 { border-color: #bce4ec !important; }
+.border-mint-300 { border-color: #8dd3e0 !important; }
+.border-mint-400 { border-color: #5baeb1 !important; }
+
+.bg-cream-50 { background-color: #fbfbf8 !important; }
+.bg-cream-100 { background-color: #f1f2ee !important; }
+.bg-cream-200 { background-color: #e6e9e4 !important; }
+.bg-cream-300 { background-color: #d7ddd5 !important; }
+.text-cream-400 { color: #90a0ae !important; }
+.text-cream-500 { color: #6f8194 !important; }
+.text-cream-600 { color: #55677a !important; }
+.text-cream-700 { color: #41576d !important; }
+.text-cream-800 { color: #2e4358 !important; }
+.border-cream-100 { border-color: #edf0eb !important; }
+.border-cream-200 { border-color: #dde3eb !important; }
+.border-cream-300 { border-color: #ccd6e0 !important; }
+
+.bg-blush-50 { background-color: #fff3f4 !important; }
+.bg-blush-100 { background-color: #ffe8ea !important; }
+.bg-blush-200 { background-color: #ffd8dc !important; }
+.border-blush-200 { border-color: #ffc9d0 !important; }
+.border-blush-300 { border-color: #ffb5be !important; }
+.text-blush-400 { color: #ef8b94 !important; }
+.text-blush-500 { color: var(--c-danger) !important; }
+.text-blush-600 { color: #d95a67 !important; }
+.text-blush-700 { color: #b94552 !important; }
+
+.bg-amber-50 { background-color: #fff7eb !important; }
+.bg-amber-100 { background-color: #ffedd2 !important; }
+.bg-amber-300 { background-color: #ffd08f !important; }
+.bg-amber-400 { background-color: #f59a23 !important; }
+.text-amber-600 { color: #b46a10 !important; }
+.text-amber-700 { color: #8f5309 !important; }
+.border-amber-200 { border-color: #ffe1b0 !important; }
+.border-amber-300 { border-color: #ffd08f !important; }
+.border-amber-400 { border-color: #f59a23 !important; }
+
+.border-l-4 {
+  border-left-width: 4px !important;
+}

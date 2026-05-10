@@ -1,10 +1,10 @@
 
 const VARIANTS = {
-  primary: 'bg-mint-500 text-white hover:bg-mint-600 border border-mint-600 shadow-sm',
-  secondary: 'bg-white text-mint-700 hover:bg-mint-50 border border-mint-300',
+  primary: 'bg-mint-500 text-white hover:bg-mint-600 border border-mint-600 shadow-md hover:shadow-lg hover:-translate-y-0.5',
+  secondary: 'bg-white text-mint-700 hover:bg-mint-50 border border-mint-300 hover:border-mint-400',
   danger: 'bg-blush-100 text-blush-700 hover:bg-blush-200 border border-blush-300',
-  ghost: 'text-mint-600 hover:bg-mint-50 border border-transparent',
-  outline: 'bg-transparent text-mint-700 border border-mint-400 hover:bg-mint-50',
+  ghost: 'text-mint-600 hover:bg-mint-50 border border-transparent hover:-translate-y-0.5',
+  outline: 'bg-transparent text-mint-700 border border-mint-400 hover:bg-mint-50 hover:border-mint-500',
 };
 
 const SIZES = {
