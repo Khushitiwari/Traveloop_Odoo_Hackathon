@@ -2,6 +2,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useEffect, useState } from 'react';
+import { LogOut } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: '🏠', end: true },
@@ -73,25 +74,31 @@ export default function Sidebar() {
         </nav>
 
         {/* User footer */}
-        <div className={`border-t border-cream-200 pt-4 flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+        <div className="border-t border-cream-200 pt-4">
+          <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
           <div className="w-9 h-9 rounded-full bg-mint-100 border-2 border-mint-300 flex items-center justify-center text-mint-700 font-semibold text-sm flex-shrink-0">
             {user?.name?.[0]?.toUpperCase()}
           </div>
           {!collapsed && (
-            <>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-mint-900 truncate">{user?.name}</p>
-                <p className="text-xs text-cream-400 truncate">{user?.email}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                title="Sign out"
-                className="text-cream-400 hover:text-blush-500 transition-colors text-lg"
-              >
-                ↩
-              </button>
-            </>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-mint-900 truncate">{user?.name}</p>
+              <p className="text-xs text-cream-400 truncate">{user?.email}</p>
+            </div>
           )}
+          </div>
+
+          <div className={`${collapsed ? 'mt-3 flex justify-center' : 'mt-3'}`}>
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className={`inline-flex items-center justify-center gap-2 rounded-xl border border-blush-200 bg-blush-50 text-blush-600 hover:bg-blush-100 hover:text-blush-700 transition-colors ${
+                collapsed ? 'w-10 h-10' : 'w-full px-3 py-2 text-sm font-medium'
+              }`}
+            >
+              <LogOut size={16} />
+              {!collapsed && <span>Logout</span>}
+            </button>
+          </div>
         </div>
       </aside>
 
