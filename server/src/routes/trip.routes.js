@@ -12,10 +12,10 @@ import { protect } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
+router.get('/shared/:token', getSharedTrip);
 router.use(protect);
 router.get('/', getMyTrips);
 router.post('/', createTrip);
-router.get('/shared/:token', getSharedTrip); // public shared link
 router.get('/:id', getTripById);
 router.put('/:id', updateTrip);
 router.delete('/:id', deleteTrip);

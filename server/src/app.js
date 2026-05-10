@@ -10,7 +10,9 @@ import budgetRoutes from './routes/budget.routes.js';
 import checklistRoutes from './routes/checklist.routes.js';
 import noteRoutes from './routes/note.routes.js';
 import cityRoutes from './routes/city.routes.js';
+import activityRoutes from './routes/activity.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -26,6 +28,10 @@ app.use('/api/trips/:tripId/budget', budgetRoutes);
 app.use('/api/trips/:tripId/checklist', checklistRoutes);
 app.use('/api/trips/:tripId/notes', noteRoutes);
 app.use('/api/cities', cityRoutes);
+app.use('/api/activities', activityRoutes);
 app.use('/api/admin', adminRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
