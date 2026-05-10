@@ -1,6 +1,5 @@
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
 import DashboardPage from '../pages/DashboardPage';
@@ -16,14 +15,7 @@ import SharedItineraryPage from '../pages/SharedItineraryPage';
 import ProfilePage from '../pages/ProfilePage';
 import TripNotesPage from '../pages/TripNotesPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage.jsx';
-
-const ProtectedRoute = ({ children, adminOnly }) => {
-  const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
-  if (!user) return <Navigate to="/login" />;
-  if (adminOnly && user.role !== 'ADMIN') return <Navigate to="/" />;
-  return children;
-};
+import ProtectedRoute from './ProtectedRoute.jsx';
 
 export default function AppRouter() {
   return (

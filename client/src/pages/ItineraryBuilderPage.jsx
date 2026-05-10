@@ -5,6 +5,7 @@ import api from '../api/axiosInstance';
 import Sidebar from '../components/common/Sidebar';
 import Modal from '../components/common/Modal';
 import Loader from '../components/common/Loader';
+import StopCard from '../components/trips/StopCard';
 import toast from 'react-hot-toast';
 
 export default function ItineraryBuilderPage() {
@@ -136,51 +137,14 @@ export default function ItineraryBuilderPage() {
           ) : (
             <div className="space-y-4">
               {trip?.stops?.sort((a, b) => a.order - b.order).map((stop, idx) => (
-                <div key={stop.id} className="bg-white rounded-2xl shadow-card p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-mint-100 flex items-center justify-center text-mint-700 font-bold text-sm flex-shrink-0">
-                        {idx + 1}
-                      </div>
-                      <div>
-                        <h3 className="font-display font-semibold text-mint-800 text-lg">{stop.city?.name}</h3>
-                        <p className="text-cream-500 text-xs">{stop.city?.country} · {new Date(stop.startDate).toLocaleDateString()} – {new Date(stop.endDate).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => openActivities(stop.id, stop.cityId)}
-                        className="text-xs text-mint-600 font-medium hover:text-mint-800 bg-mint-50 hover:bg-mint-100 px-3 py-1.5 rounded-lg transition-colors"
-                      >
-                        + Activities
-                      </button>
-                      <button
-                        onClick={() => handleDeleteStop(stop.id)}
-                        className="text-xs text-blush-500 font-medium hover:text-blush-700 bg-blush-50 hover:bg-blush-100 px-3 py-1.5 rounded-lg transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Activities */}
-                  {stop.stopActivities?.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-                      {stop.stopActivities.map(sa => (
-                        <div key={sa.id} className="flex items-center gap-2.5 bg-cream-50 rounded-xl px-3 py-2.5 border border-cream-200">
-                          <span className="text-lg">{sa.activity?.type === 'food' ? '🍽️' : sa.activity?.type === 'adventure' ? '🏃' : '👁️'}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-cream-800 truncate">{sa.activity?.name}</p>
-                            <p className="text-xs text-cream-500">${sa.activity?.cost} · {sa.activity?.duration}min</p>
-                          </div>
-                          <button onClick={() => removeActivity(stop.id, sa.id)} className="text-blush-400 hover:text-blush-600 text-lg leading-none">×</button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-cream-400 text-sm italic mt-2">No activities added yet. Click "+ Activities" to add some.</p>
-                  )}
-                </div>
+                <StopCard
+                  key={stop.id}
+                  stop={stop}
+                  index={idx}
+                  onAddActivities={() => openActivities(stop.id, stop.cityId)}
+                  onDelete={() => handleDeleteStop(stop.id)}
+                  onRemoveActivity={(saId) => removeActivity(stop.id, saId)}
+                />
               ))}
             </div>
           )}

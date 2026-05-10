@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
 import Sidebar from '../components/common/Sidebar';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import toast from 'react-hot-toast';
+import BudgetChart from '../components/budget/BudgetChart';
+import CostRow from '../components/budget/CostRow';
 
 const CATEGORIES = [
   { key: 'transport', label: 'Transport', icon: '✈️', color: '#56afa1' },
@@ -132,32 +133,21 @@ export default function BudgetPage() {
             {/* Chart */}
             <div className="bg-white rounded-2xl shadow-card p-6">
               <h2 className="section-heading">Breakdown Chart</h2>
-              {chartData.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 text-cream-400">
-                  <div className="text-4xl mb-3">📊</div>
-                  <p className="text-sm">Enter budget amounts to see the chart</p>
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={280}>
-                  <PieChart>
-                    <Pie data={chartData} cx="50%" cy="50%" outerRadius={100} dataKey="value" paddingAngle={3}>
-                      {chartData.map((_, i) => <Cell key={i} fill={CATEGORIES.find(c => c.label === chartData[i].name)?.color || '#ccc'} />)}
-                    </Pie>
-                    <Tooltip formatter={(val) => [`${budget.currency} ${val}`, '']} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
+              <BudgetChart
+                chartData={chartData}
+                currency={budget.currency}
+                colorsByName={Object.fromEntries(CATEGORIES.map((c) => [c.label, c.color]))}
+              />
               {spent > 0 && (
                 <div className="border-t border-cream-100 pt-4 mt-4 space-y-2">
                   {CATEGORIES.filter(c => budget[c.key] > 0).map(cat => (
-                    <div key={cat.key} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                        <span className="text-cream-600">{cat.label}</span>
-                      </div>
-                      <span className="font-medium text-cream-800">{budget.currency} {budget[cat.key].toLocaleString()}</span>
-                    </div>
+                    <CostRow
+                      key={cat.key}
+                      icon={cat.icon}
+                      label={cat.label}
+                      value={budget[cat.key]}
+                      currency={budget.currency}
+                    />
                   ))}
                 </div>
               )}
