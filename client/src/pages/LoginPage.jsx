@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { ShieldCheck, Sparkles, Mail, Lock } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -46,28 +47,37 @@ export default function LoginPage() {
               <span key={city} className="bg-white/60 backdrop-blur text-mint-900 text-sm px-3 py-1.5 rounded-full">{city}</span>
             ))}
           </div>
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-mint-800">
+            <ShieldCheck size={16} />
+            <span>Secure sign-in with protected sessions</span>
+          </div>
         </div>
       </div>
 
       {/* Right panel */}
       <div className="flex-1 flex items-center justify-center bg-cream-100 p-8">
-        <div className="w-full max-w-md animate-slide-up">
+        <div className="w-full max-w-md animate-slide-up bg-white rounded-3xl border border-cream-200 shadow-card p-7 sm:p-8">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-10">
+          <div className="flex items-center justify-between gap-3 mb-8">
+            <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-mint-500 flex items-center justify-center text-white text-lg font-bold">T</div>
             <span className="text-2xl font-display font-semibold text-mint-800">Traveloop</span>
+            </div>
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-mint-50 text-mint-700 border border-mint-200">
+              <Sparkles size={13} /> Easy Planning
+            </span>
           </div>
 
           <h2 className="text-3xl font-display font-semibold text-mint-900 mb-2">
             {adminMode ? 'Admin sign in' : 'Welcome back'}
           </h2>
-          <p className="text-cream-600 mb-8">
+          <p className="text-cream-700 mb-7">
             {adminMode ? 'Use admin credentials to open the dashboard.' : 'Sign in to continue planning your adventures.'}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="label">Email address</label>
+              <label className="label flex items-center gap-2"><Mail size={14} />Email address</label>
               <input
                 type="email"
                 className="input-field"
@@ -78,7 +88,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="label">Password</label>
+              <label className="label flex items-center gap-2"><Lock size={14} />Password</label>
               <input
                 type="password"
                 className="input-field"
@@ -95,7 +105,7 @@ export default function LoginPage() {
             >
               {loading ? (
                 <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Signing in...</>
-              ) : 'Sign In →'}
+              ) : 'Sign In'}
             </button>
           </form>
 
