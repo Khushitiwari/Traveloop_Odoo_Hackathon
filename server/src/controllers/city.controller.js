@@ -17,6 +17,100 @@ const DEFAULT_CITIES = [
 
 let bootstrapped = false;
 
+const buildActivityCatalog = (city) => {
+  const base = [
+    {
+      name: `${city.name} Beach Day`,
+      description: `Relax and unwind at a top beach spot near ${city.name}.`,
+      type: 'beach',
+      cost: 15,
+      duration: 240,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Scuba Diving Session`,
+      description: `Beginner-friendly scuba diving with a certified guide.`,
+      type: 'scuba_diving',
+      cost: 90,
+      duration: 180,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Candle Light Dinner`,
+      description: `Romantic dining experience with local cuisine.`,
+      type: 'candle_light_dinner',
+      cost: 60,
+      duration: 120,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Museum Visit`,
+      description: `Explore art, history, and culture in a top museum.`,
+      type: 'museum',
+      cost: 20,
+      duration: 120,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Holy Places Trail`,
+      description: `Visit spiritual and heritage landmarks in and around the city.`,
+      type: 'holy_places',
+      cost: 10,
+      duration: 150,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Adventure Park`,
+      description: `Thrilling day with zipline, ATV, and outdoor challenges.`,
+      type: 'adventure',
+      cost: 55,
+      duration: 180,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Walking Tour`,
+      description: `Guided highlights tour across ${city.name}.`,
+      type: 'sightseeing',
+      cost: 25,
+      duration: 120,
+      cityId: city.id,
+    },
+    {
+      name: `${city.name} Food Experience`,
+      description: `Taste local flavors and iconic dishes in ${city.name}.`,
+      type: 'food',
+      cost: 35,
+      duration: 90,
+      cityId: city.id,
+    },
+  ];
+
+  const regionSpecials = {
+    Europe: [
+      { name: `${city.name} Heritage Museum Circuit`, description: 'Curated museum and old-town pass.', type: 'museum', cost: 28, duration: 180, cityId: city.id },
+      { name: `${city.name} Cathedral & Basilica Walk`, description: 'Iconic holy places and historic architecture.', type: 'holy_places', cost: 18, duration: 140, cityId: city.id },
+    ],
+    Asia: [
+      { name: `${city.name} Temple and Shrine Tour`, description: 'Sacred places with local storytelling guide.', type: 'holy_places', cost: 16, duration: 150, cityId: city.id },
+      { name: `${city.name} Night Market Food Trail`, description: 'Budget-friendly street food tasting walk.', type: 'food', cost: 18, duration: 100, cityId: city.id },
+    ],
+    Americas: [
+      { name: `${city.name} Waterfront Adventure Combo`, description: 'Kayaking, cliff walk, and coastal viewpoints.', type: 'adventure', cost: 65, duration: 200, cityId: city.id },
+      { name: `${city.name} Museum Mile Pass`, description: 'Multiple museum access in one day.', type: 'museum', cost: 26, duration: 160, cityId: city.id },
+    ],
+    Africa: [
+      { name: `${city.name} Desert Adventure Trail`, description: 'Guided off-road and dune experience.', type: 'adventure', cost: 50, duration: 180, cityId: city.id },
+      { name: `${city.name} Cultural Heritage Museum`, description: 'Regional history and craft exhibits.', type: 'museum', cost: 14, duration: 110, cityId: city.id },
+    ],
+    Oceania: [
+      { name: `${city.name} Reef Discovery Dive`, description: 'Scuba and reef safety intro with equipment.', type: 'scuba_diving', cost: 95, duration: 170, cityId: city.id },
+      { name: `${city.name} Sunset Beach Picnic`, description: 'Low-cost beachside evening with scenic views.', type: 'beach', cost: 12, duration: 140, cityId: city.id },
+    ],
+  };
+
+  return [...base, ...(regionSpecials[city.region] || [])];
+};
+
 const bootstrapCityDataIfNeeded = async () => {
   if (bootstrapped) return;
 
@@ -25,31 +119,12 @@ const bootstrapCityDataIfNeeded = async () => {
     await prisma.city.createMany({ data: DEFAULT_CITIES });
   }
 
-  const allCities = await prisma.city.findMany({ select: { id: true, name: true } });
+  const allCities = await prisma.city.findMany({ select: { id: true, name: true, region: true } });
   for (const city of allCities) {
     const activityCount = await prisma.activity.count({ where: { cityId: city.id } });
     if (activityCount > 0) continue;
 
-    await prisma.activity.createMany({
-      data: [
-        {
-          name: `${city.name} Walking Tour`,
-          description: `Guided highlights tour across ${city.name}.`,
-          type: 'sightseeing',
-          cost: 25,
-          duration: 120,
-          cityId: city.id,
-        },
-        {
-          name: `${city.name} Food Experience`,
-          description: `Taste local flavors and iconic dishes in ${city.name}.`,
-          type: 'food',
-          cost: 35,
-          duration: 90,
-          cityId: city.id,
-        },
-      ],
-    });
+    await prisma.activity.createMany({ data: buildActivityCatalog(city) });
   }
 
   bootstrapped = true;

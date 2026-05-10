@@ -2,12 +2,43 @@
 import prisma from '../config/db.js';
 
 export const addStop = async (req, res) => {
-  const { cityId, startDate, endDate, order } = req.body;
-  const stop = await prisma.stop.create({
-    data: { tripId: req.params.tripId, cityId, startDate: new Date(startDate), endDate: new Date(endDate), order },
-    include: { city: true },
-  });
-  res.status(201).json(stop);
+  try {
+    const { cityId, startDate, endDate, order } = req.body;
+
+    if (!cityId || !startDate || !endDate) {
+      return res.status(400).json({ message: 'City and dates are required.' });
+    }
+    if (new Date(endDate) < new Date(startDate)) {
+      return res.status(400).json({ message: 'Departure date must be after arrival date.' });
+    }
+
+    const trip = await prisma.trip.findFirst({
+      where: { id: req.params.tripId, userId: req.user.userId },
+      select: { id: true },
+    });
+    if (!trip) return res.status(404).json({ message: 'Trip not found' });
+
+    const maxOrderStop = await prisma.stop.findFirst({
+      where: { tripId: req.params.tripId },
+      orderBy: { order: 'desc' },
+      select: { order: true },
+    });
+    const nextOrder = Number.isFinite(order) ? Number(order) : (maxOrderStop?.order || 0) + 1;
+
+    const stop = await prisma.stop.create({
+      data: {
+        tripId: req.params.tripId,
+        cityId,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        order: nextOrder,
+      },
+      include: { city: true },
+    });
+    res.status(201).json(stop);
+  } catch (err) {
+    res.status(500).json({ message: err.message || 'Failed to add stop' });
+  }
 };
 
 export const updateStop = async (req, res) => {

@@ -6,12 +6,27 @@ import Sidebar from '../components/common/Sidebar';
 import Loader from '../components/common/Loader';
 import toast from 'react-hot-toast';
 
-const TYPE_ICONS = { sightseeing: '👁️', food: '🍽️', adventure: '🏃', shopping: '🛍️' };
+const TYPE_ICONS = {
+  sightseeing: '👁️',
+  food: '🍽️',
+  adventure: '🏃',
+  shopping: '🛍️',
+  beach: '🏖️',
+  scuba_diving: '🤿',
+  candle_light_dinner: '🕯️',
+  museum: '🏛️',
+  holy_places: '🛕',
+};
 const TYPE_COLORS = {
   sightseeing: 'bg-amber-50 border-amber-200 text-amber-700',
   food: 'bg-blush-50 border-blush-200 text-blush-700',
   adventure: 'bg-mint-50 border-mint-200 text-mint-700',
   shopping: 'bg-purple-50 border-purple-200 text-purple-700',
+  beach: 'bg-sky-50 border-sky-200 text-sky-700',
+  scuba_diving: 'bg-cyan-50 border-cyan-200 text-cyan-700',
+  candle_light_dinner: 'bg-rose-50 border-rose-200 text-rose-700',
+  museum: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+  holy_places: 'bg-orange-50 border-orange-200 text-orange-700',
 };
 
 export default function ItineraryViewPage() {

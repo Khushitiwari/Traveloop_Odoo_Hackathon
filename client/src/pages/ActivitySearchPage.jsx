@@ -4,12 +4,27 @@ import api from '../api/axiosInstance';
 import Sidebar from '../components/common/Sidebar';
 import toast from 'react-hot-toast';
 
-const TYPE_ICONS = { sightseeing: '👁️', food: '🍽️', adventure: '🏃', shopping: '🛍️' };
+const TYPE_ICONS = {
+  sightseeing: '👁️',
+  food: '🍽️',
+  adventure: '🏃',
+  shopping: '🛍️',
+  beach: '🏖️',
+  scuba_diving: '🤿',
+  candle_light_dinner: '🕯️',
+  museum: '🏛️',
+  holy_places: '🛕',
+};
 const TYPE_COLORS = {
   sightseeing: 'bg-amber-50 border-amber-200',
   food: 'bg-blush-50 border-blush-200',
   adventure: 'bg-mint-50 border-mint-200',
   shopping: 'bg-purple-50 border-purple-200',
+  beach: 'bg-sky-50 border-sky-200',
+  scuba_diving: 'bg-cyan-50 border-cyan-200',
+  candle_light_dinner: 'bg-rose-50 border-rose-200',
+  museum: 'bg-indigo-50 border-indigo-200',
+  holy_places: 'bg-orange-50 border-orange-200',
 };
 
 export default function ActivitySearchPage() {
@@ -66,6 +81,11 @@ export default function ActivitySearchPage() {
               <option value="food">🍽️ Food</option>
               <option value="adventure">🏃 Adventure</option>
               <option value="shopping">🛍️ Shopping</option>
+              <option value="beach">🏖️ Beach</option>
+              <option value="scuba_diving">🤿 Scuba Diving</option>
+              <option value="candle_light_dinner">🕯️ Candle Light Dinner</option>
+              <option value="museum">🏛️ Museum</option>
+              <option value="holy_places">🛕 Holy Places</option>
             </select>
             <select className="input-field w-auto" value={filters.maxCost} onChange={e => setFilters({ ...filters, maxCost: e.target.value })}>
               <option value="">Any Budget</option>
@@ -93,7 +113,7 @@ export default function ActivitySearchPage() {
                     <div className="flex gap-3 text-xs text-cream-500 mb-4">
                       <span>💰 ${act.cost}</span>
                       <span>⏱ {act.duration}min</span>
-                      <span className="capitalize">🏷 {act.type}</span>
+                      <span>🏷 {(act.type || '').replace(/_/g, ' ')}</span>
                     </div>
                     <button
                       onClick={() => !isAdded && handleAdd(act.id)}

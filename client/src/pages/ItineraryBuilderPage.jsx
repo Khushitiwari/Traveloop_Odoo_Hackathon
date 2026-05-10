@@ -20,6 +20,16 @@ export default function ItineraryBuilderPage() {
   const [stopForm, setStopForm] = useState({ cityId: '', startDate: '', endDate: '' });
   const [activityModal, setActivityModal] = useState(null); // stopId
   const [activities, setActivities] = useState([]);
+  const [showEditTrip, setShowEditTrip] = useState(false);
+  const [updatingTrip, setUpdatingTrip] = useState(false);
+  const [tripForm, setTripForm] = useState({
+    name: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    coverPhoto: '',
+    isPublic: false,
+  });
 
   const fetchTrip = async () => {
     try {
@@ -32,6 +42,18 @@ export default function ItineraryBuilderPage() {
     }
   };
 
+  useEffect(() => {
+    if (!trip) return;
+    setTripForm({
+      name: trip.name || '',
+      description: trip.description || '',
+      startDate: trip.startDate ? new Date(trip.startDate).toISOString().slice(0, 10) : '',
+      endDate: trip.endDate ? new Date(trip.endDate).toISOString().slice(0, 10) : '',
+      coverPhoto: trip.coverPhoto || '',
+      isPublic: !!trip.isPublic,
+    });
+  }, [trip]);
+
   useEffect(() => { fetchTrip(); }, [id]);
 
   useEffect(() => {
@@ -42,18 +64,22 @@ export default function ItineraryBuilderPage() {
 
   const handleAddStop = async (e) => {
     e.preventDefault();
+    if (new Date(stopForm.endDate) < new Date(stopForm.startDate)) {
+      toast.error('Departure date must be after arrival date');
+      return;
+    }
     setAddingStop(true);
     try {
       await api.post(`/trips/${id}/stops`, {
         ...stopForm,
-        order: (trip?.stops?.length || 0) + 1,
       });
       toast.success('Stop added!');
       setShowAddStop(false);
       setStopForm({ cityId: '', startDate: '', endDate: '' });
+      setCitySearch('');
       fetchTrip();
-    } catch {
-      toast.error('Failed to add stop');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to add stop');
     } finally {
       setAddingStop(false);
     }
@@ -93,6 +119,25 @@ export default function ItineraryBuilderPage() {
     } catch { toast.error('Failed'); }
   };
 
+  const handleUpdateTrip = async (e) => {
+    e.preventDefault();
+    if (tripForm.startDate && tripForm.endDate && new Date(tripForm.endDate) < new Date(tripForm.startDate)) {
+      toast.error('End date must be after start date');
+      return;
+    }
+    setUpdatingTrip(true);
+    try {
+      await api.put(`/trips/${id}`, tripForm);
+      toast.success('Trip details updated');
+      setShowEditTrip(false);
+      fetchTrip();
+    } catch {
+      toast.error('Failed to update trip');
+    } finally {
+      setUpdatingTrip(false);
+    }
+  };
+
   if (loading) return (
     <div className="layout-with-sidebar"><Sidebar /><main className="main-with-sidebar"><div className="page-content"><Loader /></div></main></div>
   );
@@ -114,6 +159,7 @@ export default function ItineraryBuilderPage() {
               </p>
             </div>
             <div className="flex gap-2 flex-wrap">
+              <button onClick={() => setShowEditTrip(true)} className="btn-primary text-sm px-4 py-2">Edit Trip ✏️</button>
               <button onClick={() => navigate(`/trips/${id}/view`)} className="btn-secondary text-sm px-4 py-2">View Itinerary</button>
               <button onClick={() => navigate(`/trips/${id}/cities`)} className="btn-secondary text-sm px-4 py-2">City Search 🌆</button>
               {trip?.stops?.[0] && (
@@ -125,6 +171,7 @@ export default function ItineraryBuilderPage() {
                 </button>
               )}
               <button onClick={() => navigate(`/trips/${id}/budget`)} className="btn-secondary text-sm px-4 py-2">Budget 💰</button>
+              <button onClick={() => navigate(`/trips/${id}/budget`)} className="btn-primary text-sm px-4 py-2">Add Total Budget ➕</button>
               <button onClick={() => navigate(`/trips/${id}/checklist`)} className="btn-secondary text-sm px-4 py-2">Checklist 📋</button>
               <button onClick={() => navigate(`/trips/${id}/notes`)} className="btn-secondary text-sm px-4 py-2">Notes 📝</button>
             </div>
@@ -237,6 +284,77 @@ export default function ItineraryBuilderPage() {
             })}
           </div>
         )}
+      </Modal>
+
+      {/* Edit Trip Modal */}
+      <Modal isOpen={showEditTrip} onClose={() => setShowEditTrip(false)} title="Edit Trip Details">
+        <form onSubmit={handleUpdateTrip} className="space-y-4">
+          <div>
+            <label className="label">Trip Name *</label>
+            <input
+              type="text"
+              className="input-field"
+              value={tripForm.name}
+              onChange={(e) => setTripForm({ ...tripForm, name: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="label">Description</label>
+            <textarea
+              className="input-field resize-none"
+              rows={3}
+              value={tripForm.description}
+              onChange={(e) => setTripForm({ ...tripForm, description: e.target.value })}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Start Date *</label>
+              <input
+                type="date"
+                className="input-field"
+                value={tripForm.startDate}
+                onChange={(e) => setTripForm({ ...tripForm, startDate: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="label">End Date *</label>
+              <input
+                type="date"
+                className="input-field"
+                value={tripForm.endDate}
+                onChange={(e) => setTripForm({ ...tripForm, endDate: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label className="label">Cover Photo URL</label>
+            <input
+              type="text"
+              className="input-field"
+              value={tripForm.coverPhoto}
+              onChange={(e) => setTripForm({ ...tripForm, coverPhoto: e.target.value })}
+              placeholder="https://..."
+            />
+          </div>
+          <label className="flex items-center gap-3 py-2">
+            <input
+              type="checkbox"
+              checked={tripForm.isPublic}
+              onChange={(e) => setTripForm({ ...tripForm, isPublic: e.target.checked })}
+            />
+            <span className="text-sm text-cream-700">Make this trip public</span>
+          </label>
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setShowEditTrip(false)} className="btn-secondary flex-1">Cancel</button>
+            <button type="submit" disabled={updatingTrip} className="btn-primary flex-1 disabled:opacity-60">
+              {updatingTrip ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

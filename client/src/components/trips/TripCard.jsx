@@ -1,4 +1,5 @@
 
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatShort, tripDuration } from '../../utils/formatDate';
 import { useTrip } from '../../context/TripContext';
@@ -7,6 +8,7 @@ import toast from 'react-hot-toast';
 export default function TripCard({ trip, onDelete }) {
   const navigate = useNavigate();
   const { deleteTrip } = useTrip();
+  const [imageFailed, setImageFailed] = useState(false);
 
   const duration = tripDuration(trip.startDate, trip.endDate);
   const cityCount = trip.stops?.length || 0;
@@ -18,6 +20,15 @@ export default function TripCard({ trip, onDelete }) {
     : isUpcoming
     ? { label: 'Upcoming', cls: 'bg-mint-100 text-mint-700' }
     : { label: 'Active', cls: 'bg-amber-100 text-amber-700' };
+
+  const normalizedCoverPhoto = useMemo(() => {
+    const raw = (trip.coverPhoto || '').trim();
+    if (!raw || imageFailed) return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:image/')) {
+      return raw;
+    }
+    return `https://${raw}`;
+  }, [trip.coverPhoto, imageFailed]);
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -38,11 +49,12 @@ export default function TripCard({ trip, onDelete }) {
     >
       {/* Cover */}
       <div className="h-28 bg-gradient-to-br from-mint-100 to-mint-200 relative overflow-hidden">
-        {trip.coverPhoto ? (
+        {normalizedCoverPhoto ? (
           <img
-            src={trip.coverPhoto}
+            src={normalizedCoverPhoto}
             alt={trip.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl opacity-40">🗺️</div>

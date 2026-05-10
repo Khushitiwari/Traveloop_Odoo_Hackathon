@@ -69,6 +69,12 @@ export default function BudgetPage() {
           <div className="mb-8">
             <h1 className="page-title">Budget Planner</h1>
             <p className="page-subtitle">Track and manage your trip expenses.</p>
+            <button
+              onClick={() => document.getElementById('total-budget-input')?.focus()}
+              className="mt-3 btn-primary text-sm px-4 py-2"
+            >
+              Add Total Budget ➕
+            </button>
           </div>
 
           {/* Overview cards */}
@@ -120,6 +126,7 @@ export default function BudgetPage() {
                       {['USD', 'EUR', 'GBP', 'INR', 'JPY'].map(c => <option key={c}>{c}</option>)}
                     </select>
                     <input type="number" min="0" step="1" className="input-field flex-1" placeholder="0"
+                      id="total-budget-input"
                       value={budget.totalBudget} onChange={e => setBudget({ ...budget, totalBudget: parseFloat(e.target.value) || 0 })} />
                   </div>
                 </div>
