@@ -37,7 +37,7 @@ export default function SharedItineraryPage() {
   return (
     <div className="min-h-screen bg-cream-100">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-mint-300 to-mint-200 text-mint-900 px-6 py-12 text-center border-b border-cream-200">
+      <div className="bg-gradient-to-br from-mint-200 to-cream-100 text-mint-900 px-6 py-12 text-center border-b border-cream-300">
         <div className="max-w-2xl mx-auto">
           <p className="text-mint-700 text-sm font-medium mb-2">Shared Itinerary by {trip.user?.name}</p>
           <h1 className="text-4xl font-display font-bold mb-3">{trip.name}</h1>
@@ -81,25 +81,25 @@ export default function SharedItineraryPage() {
               {idx < (trip.stops.length - 1) && <div className="w-0.5 flex-1 bg-mint-200 mt-1 mb-1 min-h-[2rem]" />}
             </div>
             <div className="flex-1 mb-5">
-              <div className="bg-white rounded-2xl shadow-card p-5">
+              <div className="bg-white rounded-2xl shadow-card p-5 border border-cream-200">
                 <h2 className="font-display font-semibold text-mint-800 text-xl mb-1">{stop.city?.name}</h2>
-                <p className="text-cream-500 text-sm mb-4">
+                <p className="text-cream-700 text-sm mb-4">
                   {stop.city?.country} · {new Date(stop.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {new Date(stop.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
                 {stop.stopActivities?.length > 0 ? (
                   <div className="space-y-2">
                     {stop.stopActivities.map(sa => (
-                      <div key={sa.id} className="flex items-center gap-2.5 bg-cream-50 rounded-xl px-3 py-2.5 border border-cream-200">
+                      <div key={sa.id} className="flex items-center gap-2.5 bg-cream-50 rounded-xl px-3 py-2.5 border border-cream-300">
                         <span className="text-base">{TYPE_ICONS[sa.activity?.type] || '📌'}</span>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-cream-800">{sa.activity?.name}</p>
-                          <p className="text-xs text-cream-500">${sa.activity?.cost} · {sa.activity?.duration}min</p>
+                          <p className="text-sm font-medium text-mint-900">{sa.activity?.name}</p>
+                          <p className="text-xs text-cream-700">${sa.activity?.cost} · {sa.activity?.duration}min</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-cream-400 text-sm italic">No activities listed.</p>
+                  <p className="text-cream-700 text-sm italic">No activities listed.</p>
                 )}
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function SharedItineraryPage() {
 
       {/* Footer */}
       <div className="text-center py-8 border-t border-cream-200">
-        <p className="text-cream-500 text-sm">
+        <p className="text-cream-700 text-sm">
           Made with <span className="text-blush-500">♥</span> using{' '}
           <span className="font-display font-semibold text-mint-600">Traveloop</span>
         </p>

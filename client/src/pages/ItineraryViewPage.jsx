@@ -21,6 +21,7 @@ export default function ItineraryViewPage() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('timeline');
   const [copied, setCopied] = useState(false);
+  const [updatingVisibility, setUpdatingVisibility] = useState(false);
 
   useEffect(() => {
     api.get(`/trips/${id}`)
@@ -35,6 +36,19 @@ export default function ItineraryViewPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast.success('Link copied!');
+  };
+
+  const togglePublicShare = async () => {
+    setUpdatingVisibility(true);
+    try {
+      const res = await api.put(`/trips/${id}`, { isPublic: !trip.isPublic });
+      setTrip((prev) => ({ ...prev, ...res.data }));
+      toast.success(res.data.isPublic ? 'Trip is now public' : 'Trip is now private');
+    } catch {
+      toast.error('Failed to update visibility');
+    } finally {
+      setUpdatingVisibility(false);
+    }
   };
 
   const totalActivitiesCost = trip?.stops?.reduce((sum, s) =>
@@ -56,12 +70,19 @@ export default function ItineraryViewPage() {
                 ← Builder
               </button>
               <h1 className="page-title mb-0">{trip?.name}</h1>
-              <p className="text-cream-500 text-sm mt-1">
+              <p className="text-cream-700 text-sm mt-1">
                 {new Date(trip?.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} →{' '}
                 {new Date(trip?.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </p>
             </div>
             <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={togglePublicShare}
+                disabled={updatingVisibility}
+                className="btn-secondary text-sm px-4 py-2"
+              >
+                {updatingVisibility ? 'Updating...' : trip?.isPublic ? 'Make Private' : 'Make Public'}
+              </button>
               {trip?.isPublic && trip?.shareToken && (
                 <button onClick={copyShare} className={`text-sm font-medium px-4 py-2 rounded-xl transition-all ${copied ? 'bg-mint-500 text-white' : 'btn-secondary'}`}>
                   {copied ? '✓ Copied!' : '🔗 Share'}
@@ -78,6 +99,25 @@ export default function ItineraryViewPage() {
             </div>
           </div>
 
+          <div className="bg-white rounded-2xl border border-cream-200 p-4 mb-7">
+            <p className="text-sm text-cream-700 mb-3 font-medium">Quick actions</p>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => navigate(`/trips/${id}/builder`)} className="btn-secondary text-sm">Builder</button>
+              <button onClick={() => navigate(`/trips/${id}/cities`)} className="btn-secondary text-sm">City Search</button>
+              {trip?.stops?.[0] && (
+                <button onClick={() => navigate(`/trips/${id}/activities/${trip.stops[0].id}`)} className="btn-secondary text-sm">
+                  Activity Search
+                </button>
+              )}
+              <button onClick={() => navigate(`/trips/${id}/notes`)} className="btn-secondary text-sm">Notes</button>
+              <button onClick={() => navigate(`/trips/${id}/budget`)} className="btn-secondary text-sm">Budget</button>
+              <button onClick={() => navigate(`/trips/${id}/checklist`)} className="btn-secondary text-sm">Checklist</button>
+              {trip?.isPublic && trip?.shareToken && (
+                <button onClick={() => navigate(`/shared/${trip.shareToken}`)} className="btn-primary text-sm">Open Public Page</button>
+              )}
+            </div>
+          </div>
+
           {/* Summary bar */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             {[
@@ -85,10 +125,10 @@ export default function ItineraryViewPage() {
               { label: 'Activities', value: trip?.stops?.reduce((s, stop) => s + (stop.stopActivities?.length || 0), 0) || 0, icon: '🎯' },
               { label: 'Activities Cost', value: `$${totalActivitiesCost.toFixed(0)}`, icon: '💰' },
             ].map(item => (
-              <div key={item.label} className="bg-white rounded-xl border border-cream-200 p-3 text-center">
+                <div key={item.label} className="bg-white rounded-xl border border-cream-200 p-3 text-center">
                 <div className="text-xl mb-1">{item.icon}</div>
                 <div className="font-display font-semibold text-mint-800 text-lg">{item.value}</div>
-                <div className="text-xs text-cream-500">{item.label}</div>
+                  <div className="text-xs text-cream-700">{item.label}</div>
               </div>
             ))}
           </div>
@@ -120,7 +160,7 @@ export default function ItineraryViewPage() {
                       )}
                       <div>
                         <h3 className="font-display font-semibold text-mint-800 text-lg">{stop.city?.name}</h3>
-                        <p className="text-cream-500 text-xs">
+                        <p className="text-cream-700 text-xs">
                           {stop.city?.country} · {new Date(stop.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {new Date(stop.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </p>
                       </div>

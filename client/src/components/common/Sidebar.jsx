@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: '🏠', end: true },
   { to: '/trips', label: 'My Trips', icon: '🗺️' },
   { to: '/trips/new', label: 'New Trip', icon: '✈️' },
+  { to: '/trips/shared-list', label: 'Shared Trips', icon: '🔗' },
   { to: '/profile', label: 'Profile', icon: '👤' },
 ];
 

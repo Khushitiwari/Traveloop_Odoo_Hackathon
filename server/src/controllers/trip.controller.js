@@ -48,9 +48,29 @@ export const getTripById = async (req, res) => {
 export const updateTrip = async (req, res) => {
   const { name, description, startDate, endDate, isPublic, coverPhoto } = req.body;
   try {
+    const existing = await prisma.trip.findUnique({
+      where: { id: req.params.id },
+      select: { userId: true, isPublic: true, shareToken: true },
+    });
+    if (!existing || existing.userId !== req.user.userId) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    const becomingPublic = typeof isPublic === 'boolean' && isPublic && !existing.isPublic;
+    const becomingPrivate = typeof isPublic === 'boolean' && !isPublic;
+
     const trip = await prisma.trip.update({
       where: { id: req.params.id },
-      data: { name, description, startDate: new Date(startDate), endDate: new Date(endDate), isPublic, coverPhoto },
+      data: {
+        ...(name !== undefined ? { name } : {}),
+        ...(description !== undefined ? { description } : {}),
+        ...(startDate ? { startDate: new Date(startDate) } : {}),
+        ...(endDate ? { endDate: new Date(endDate) } : {}),
+        ...(isPublic !== undefined ? { isPublic } : {}),
+        ...(coverPhoto !== undefined ? { coverPhoto } : {}),
+        ...(becomingPublic && !existing.shareToken ? { shareToken: uuidv4() } : {}),
+        ...(becomingPrivate ? { shareToken: null } : {}),
+      },
     });
     res.json(trip);
   } catch (err) {

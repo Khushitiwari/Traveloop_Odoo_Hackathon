@@ -15,6 +15,7 @@ import SharedItineraryPage from '../pages/SharedItineraryPage';
 import ProfilePage from '../pages/ProfilePage';
 import TripNotesPage from '../pages/TripNotesPage';
 import AdminDashboardPage from '../pages/AdminDashboardPage.jsx';
+import PublicSharedTripsPage from '../pages/PublicSharedTripsPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 export default function AppRouter() {
@@ -35,6 +36,7 @@ export default function AppRouter() {
         <Route path="/trips/:id/activities/:stopId" element={<ProtectedRoute><ActivitySearchPage /></ProtectedRoute>} />
         <Route path="/trips/:id/checklist" element={<ProtectedRoute><PackingChecklistPage /></ProtectedRoute>} />
         <Route path="/trips/:id/notes" element={<ProtectedRoute><TripNotesPage /></ProtectedRoute>} />
+        <Route path="/trips/shared-list" element={<ProtectedRoute><PublicSharedTripsPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboardPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
